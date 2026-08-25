@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRAPHIS // Decentralized Academic Knowledge Engine - CHRIST University</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="browser@4.js"></script>
+  <script src="lucide.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-['Plus_Jakarta_Sans',sans-serif] min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
+
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-cyan-500 focus:text-black focus:px-4 focus:py-2 focus:rounded-lg font-bold">Skip to content</a>
+  <canvas id="ambient-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+  <header class="relative z-20 border-b border-cyan-500/20 bg-slate-950/80 backdrop-blur-xl sticky top-0 px-4 py-3 flex items-center justify-between shadow-2xl shadow-cyan-950/20">
+    <div class="flex items-center gap-3">
+      <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 via-slate-900 to-purple-600/30 border border-cyan-400/40 shadow-inner group cursor-pointer" id="brand-logo">
+        <i data-lucide="network" class="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+        <span class="absolute -top-1 -right-1 flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+        </span>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-xl font-black tracking-wider uppercase bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent font-['Fira_Code',monospace]">
+            GRAPHIS <span class="text-xs px-2 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-cyan-300 font-mono">v1.0</span>
+          </h1>
+          <span class="text-xs hidden md:inline-block px-2.5 py-0.5 rounded bg-purple-950/60 border border-purple-500/40 text-purple-300 font-mono">
+            IPFS MERKLE-DAG
+          </span>
+        </div>
+        <p class="text-xs text-slate-400 font-medium">CHRIST (Deemed to be University) • Bangalore Yeshwanthpur Campus</p>
+      </div>
+    </div>
+
+    <div class="hidden lg:flex items-center gap-2">
+      <button id="cmd-palette-trigger" class="flex items-center gap-3 px-4 py-2 rounded-xl bg-slate-900/90 border border-slate-700/60 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 text-xs font-mono transition-all shadow-inner w-80 justify-between group cursor-pointer">
+        <span class="flex items-center gap-2">
+          <i data-lucide="search" class="w-4 h-4 text-cyan-400"></i>
+          <span>Search papers, methods, datasets...</span>
+        </span>
+        <kbd class="px-2 py-0.5 text-[10px] bg-slate-800 rounded border border-slate-700 text-slate-300 font-mono group-hover:border-cyan-500/40">Ctrl + K</kbd>
+      </button>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="btn-sound-toggle" aria-label="Toggle Sound Effects" class="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-cyan-400 transition cursor-pointer" title="Toggle UI Audio Synth">
+        <i data-lucide="volume-2" id="icon-sound" class="w-4 h-4"></i>
+      </button>
+      <button id="btn-contrast-toggle" aria-label="Toggle High Contrast Mode" class="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/40 text-slate-300 hover:text-cyan-400 transition cursor-pointer" title="High Contrast Mode">
+        <i data-lucide="sun-moon" class="w-4 h-4"></i>
+      </button>
+      <button id="btn-quick-ingest" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-black font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all hover:scale-105 active:scale-95 cursor-pointer">
+        <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+        <span>INGEST RESEARCH</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="relative z-10 bg-slate-950/60 border-b border-slate-800/80 px-4 py-2 backdrop-blur-md" aria-label="Campus Research Telemetry">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+      <div class="flex items-center gap-6 overflow-x-auto py-1">
+        <div class="flex items-center gap-2 text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span class="text-slate-400">RESEARCH NODES:</span>
+          <span id="stat-total-nodes" class="text-cyan-300 font-bold">16</span>
+        </div>
+        <div class="flex items-center gap-2 text-slate-300">
+          <i data-lucide="git-fork" class="w-3.5 h-3.5 text-purple-400"></i>
+          <span class="text-slate-400">CROSS-SILO BRIDGES:</span>
+          <span id="stat-cross-bridges" class="text-purple-300 font-bold">--</span>
+        </div>
+        <div class="flex items-center gap-2 text-slate-300">
+          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span class="text-slate-400">REDUNDANCY ALERTS:</span>
+          <span id="stat-redundancy-alerts" class="text-amber-300 font-bold">--</span>
+        </div>
+        <div class="flex items-center gap-2 text-slate-300">
+          <i data-lucide="database" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span class="text-slate-400">DEPARTMENTS:</span>
+          <span id="stat-dept-count" class="text-emerald-300 font-bold">7</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-400">
+        <span class="hidden sm:inline">MERKLE ROOT:</span>
+        <span id="stat-merkle-root" class="text-cyan-400/80 truncate max-w-[140px] md:max-w-[200px]" title="Decentralized Root Hash">GENESIS...</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>CLOUD RUN READY</span>
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <main id="main-content" class="relative z-10 flex-1 flex flex-col overflow-hidden max-w-7xl mx-auto w-full p-3 sm:p-4 gap-4">
+    <nav class="flex items-center gap-1.5 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800 backdrop-blur-md shadow-xl overflow-x-auto" aria-label="Main Navigation">
+      <button class="nav-tab active flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer" data-tab="tab-graph">
+        <i data-lucide="orbit" class="w-4 h-4 text-cyan-400"></i>
+        <span>3D/2D HOLO-GRAPH</span>
+      </button>
+      <button class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 cursor-pointer" data-tab="tab-collision">
+        <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+        <span>COLLISION MATRIX</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-purple-900/60 text-purple-300 text-[10px] font-mono" id="badge-collision-count">--</span>
+      </button>
+      <button class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 cursor-pointer" data-tab="tab-redundancy">
+        <i data-lucide="copy-check" class="w-4 h-4 text-amber-400"></i>
+        <span>REDUNDANCY SENTINEL</span>
+        <span class="px-1.5 py-0.2 rounded-full bg-amber-900/60 text-amber-300 text-[10px] font-mono" id="badge-redundancy-count">--</span>
+      </button>
+      <button class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 cursor-pointer" data-tab="tab-decentralized">
+        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+        <span>DECENTRALIZED LEDGER</span>
+      </button>
+      <button class="nav-tab flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-400 hover:text-slate-200 cursor-pointer" data-tab="tab-ingestion">
+        <i data-lucide="file-plus-2" class="w-4 h-4 text-cyan-400"></i>
+        <span>INGESTION STUDIO</span>
+      </button>
+    </nav>
+
+    <div class="flex-1 relative flex flex-col min-h-[550px] lg:min-h-[620px] rounded-2xl border border-slate-800/80 bg-slate-950/80 backdrop-blur-xl shadow-2xl overflow-hidden">
+      
+      <!-- TAB 1: HOLO GRAPH -->
+      <section id="tab-graph" class="tab-panel active flex-1 flex flex-col relative w-full h-full">
+        <div class="absolute top-4 left-4 z-20 flex flex-wrap items-center gap-2 pointer-events-auto">
+          <div class="relative">
+            <select id="graph-dept-filter" class="appearance-none bg-slate-900/90 border border-slate-700 hover:border-cyan-500/50 text-slate-200 text-xs font-mono rounded-xl px-3 py-2 pr-8 shadow-xl backdrop-blur-md focus:outline-none focus:ring-1 focus:ring-cyan-500 cursor-pointer">
+              <option value="ALL">All Departments (7)</option>
+              <option value="Computer Science & Data Science">Computer Science & Data Science</option>
+              <option value="School of Business and Management">School of Business and Management</option>
+              <option value="Commerce, Finance & Accountancy">Commerce, Finance & Accountancy</option>
+              <option value="Department of Psychology">Department of Psychology</option>
+              <option value="Department of Economics">Department of Economics</option>
+              <option value="School of Law">School of Law</option>
+              <option value="Media Studies & Digital Humanities">Media Studies & Digital Humanities</option>
+            </select>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none"></i>
+          </div>
+
+          <button id="btn-toggle-cross-bridges" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-purple-500/40 text-purple-300 hover:bg-purple-950/40 text-xs font-mono shadow-xl backdrop-blur-md transition cursor-pointer">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span>Highlight Cross-Silo</span>
+          </button>
+
+          <button id="btn-reset-camera" class="p-2 rounded-xl bg-slate-900/90 border border-slate-700 hover:border-cyan-500/40 text-slate-300 hover:text-cyan-400 text-xs shadow-xl backdrop-blur-md transition cursor-pointer" title="Center & Fit Graph">
+            <i data-lucide="focus" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="relative flex-1 w-full h-full overflow-hidden" id="graph-container">
+          <canvas id="graph-canvas" class="w-full h-full block cursor-grab active:cursor-grabbing"></canvas>
+          
+          <div class="absolute bottom-4 left-4 z-20 bg-slate-900/85 border border-slate-800/80 rounded-xl p-3 backdrop-blur-md text-[11px] shadow-2xl max-w-xs pointer-events-auto">
+            <div class="font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+              <span>CAMPUS FACULTY CLUSTERS</span>
+              <span class="text-[9px] text-cyan-400 font-mono">LIVE PHYSICS</span>
+            </div>
+            <div class="grid grid-cols-2 gap-x-3 gap-y-1 font-mono text-[10px]">
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#00f3ff]"></span><span class="text-slate-300">CS & Data Science</span></div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#f59e0b]"></span><span class="text-slate-300">Business & Mgmt</span></div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#10b981]"></span><span class="text-slate-300">Commerce & Finance</span></div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#ec4899]"></span><span class="text-slate-300">Psychology</span></div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#8b5cf6]"></span><span class="text-slate-300">Economics</span></div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#ef4444]"></span><span class="text-slate-300">Law</span></div>
+              <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#06b6d4]"></span><span class="text-slate-300">Media Studies</span></div>
+            </div>
+          </div>
+        </div>
+
+        <aside id="node-inspector" class="absolute top-0 right-0 bottom-0 w-full sm:w-96 bg-slate-950/95 border-l border-cyan-500/30 p-5 backdrop-blur-2xl shadow-2xl transform translate-x-full transition-transform duration-300 z-30 flex flex-col overflow-y-auto" aria-label="Research Node Inspector">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40" id="inspector-id">NODE-ID</span>
+            <button id="btn-close-inspector" class="p-1 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition cursor-pointer">
+              <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <div class="mt-4 flex-1 space-y-4 text-xs">
+            <div>
+              <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider block" id="inspector-dept">Department</span>
+              <h3 class="text-base font-bold text-slate-100 leading-snug mt-1" id="inspector-title">Research Title</h3>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono text-slate-400 block mb-1">AUTHORS</span>
+              <p class="text-slate-300 font-medium" id="inspector-authors">Author names</p>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono text-slate-400 block mb-1">ABSTRACT</span>
+              <p class="text-slate-300 text-xs leading-relaxed bg-slate-900/80 p-3 rounded-xl border border-slate-800" id="inspector-abstract">Abstract text...</p>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono text-slate-400 block mb-1.5">DETECTED METHODOLOGIES & MODELS</span>
+              <div class="flex flex-wrap gap-1.5" id="inspector-methods"></div>
+            </div>
+            <div>
+              <span class="text-[10px] font-mono text-slate-400 block mb-1.5">DATASETS UTILIZED</span>
+              <div class="flex flex-wrap gap-1.5" id="inspector-datasets"></div>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2 font-mono text-[11px]">
+              <div class="flex items-center justify-between text-slate-400">
+                <span>PageRank Centrality:</span>
+                <span class="text-cyan-400 font-bold" id="inspector-pagerank">0.00</span>
+              </div>
+              <div class="flex items-center justify-between text-slate-400">
+                <span>Cross-Silo Bridges:</span>
+                <span class="text-purple-400 font-bold" id="inspector-cross-score">0</span>
+              </div>
+              <div class="flex flex-col gap-1 pt-1 border-t border-slate-800">
+                <span class="text-slate-400 text-[10px]">IPFS CONTENT IDENTIFIER (CID):</span>
+                <span class="text-emerald-400 text-[10px] truncate" id="inspector-cid">bafkrei...</span>
+              </div>
+            </div>
+            <div class="pt-2 flex flex-col gap-2">
+              <button id="btn-find-bridges" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 transition cursor-pointer">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span>EXPLORE INTERDISCIPLINARY COLLISION</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- TAB 2: COLLISION MATRIX -->
+      <section id="tab-collision" class="tab-panel hidden flex-1 flex flex-col p-6 overflow-y-auto">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-5 h-5 text-purple-400"></i>
+              <span>Cross-Disciplinary Research Collision Matrix</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Automated serendipity discovery across Christ University Yeshwanthpur faculties, highlighting unlinked parallel studies with high breakthrough synergy.
+            </p>
+          </div>
+          <span class="px-3 py-1.5 rounded-xl bg-purple-950/60 border border-purple-500/30 text-purple-300 text-xs font-mono self-start">
+            AI-SYNTHESIZED GRANT SYNERGIES
+          </span>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4" id="collision-cards-grid"></div>
+      </section>
+
+      <!-- TAB 3: REDUNDANCY SENTINEL -->
+      <section id="tab-redundancy" class="tab-panel hidden flex-1 flex flex-col p-6 overflow-y-auto">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="copy-check" class="w-5 h-5 text-amber-400"></i>
+              <span>Redundancy Sentinel & Thesis Duplicate Inspector</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Multi-dimensional text cosine similarity, dataset overlap, and methodology duplication detector protecting university research allocations.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1.5 rounded-xl bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-mono">
+              THRESHOLD: > 25% OVERLAP
+            </span>
+          </div>
+        </div>
+        <div class="space-y-4" id="redundancy-reports-list"></div>
+      </section>
+
+      <!-- TAB 4: DECENTRALIZED LEDGER -->
+      <section id="tab-decentralized" class="tab-panel hidden flex-1 flex flex-col p-6 overflow-y-auto">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
+              <span>Decentralized Academic Citation & Merkle DAG Ledger</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Cryptographic SHA-256 and IPFS CIDv1 immutability engine guaranteeing priority of discovery for Christ University researchers.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 mb-6 backdrop-blur-md">
+          <h3 class="text-sm font-bold text-slate-200 mb-3 flex items-center gap-2 font-mono">
+            <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
+            <span>VERIFY CITATION PROOF BY PAPER ID</span>
+          </h3>
+          <div class="flex gap-2">
+            <input type="text" id="input-verify-id" placeholder="e.g. CHRIST-CS-2025-01" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500">
+            <button id="btn-execute-verify" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-xl transition cursor-pointer">
+              VERIFY ON-CHAIN
+            </button>
+          </div>
+          <div id="verify-result-box" class="mt-4 hidden p-4 rounded-xl bg-slate-950 border border-emerald-500/40 font-mono text-xs text-emerald-300"></div>
+        </div>
+
+        <div class="bg-slate-900/50 border border-slate-800/80 rounded-2xl overflow-hidden">
+          <div class="p-4 border-b border-slate-800 font-bold text-xs text-slate-300 font-mono">
+            REGISTERED IMMUTABLE PUBLICATIONS
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 text-[10px]">
+                <tr>
+                  <th class="p-3">PAPER ID</th>
+                  <th class="p-3">DEPARTMENT</th>
+                  <th class="p-3">IPFS CIDv1</th>
+                  <th class="p-3">SHA-256 PROOF</th>
+                  <th class="p-3">STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-table-body" class="divide-y divide-slate-800/60 text-slate-300"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: INGESTION STUDIO -->
+      <section id="tab-ingestion" class="tab-panel hidden flex-1 flex flex-col p-6 overflow-y-auto">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="file-plus-2" class="w-5 h-5 text-cyan-400"></i>
+              <span>Multi-Source Research Ingestion Studio</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Ingest raw research PDFs, Markdown papers, or Code Repositories. Real-time Gemini entity extraction, Merkle CID generation, and instant graph synthesis.
+            </p>
+          </div>
+          <span class="px-3 py-1.5 rounded-xl bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 text-xs font-mono">
+            GOOGLE GEMINI 2.0 / NLP EXTRACTOR
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-6 space-y-4">
+            <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-cyan-400/70 bg-slate-900/40 hover:bg-cyan-950/10 rounded-2xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group">
+              <input type="file" id="file-input" class="hidden" accept=".pdf,.md,.txt,.py,.js,.ts,.json,.ipynb">
+              <div class="w-12 h-12 rounded-xl bg-slate-800 group-hover:bg-cyan-900/40 border border-slate-700 group-hover:border-cyan-400/40 flex items-center justify-center text-slate-400 group-hover:text-cyan-400 transition">
+                <i data-lucide="upload" class="w-6 h-6"></i>
+              </div>
+              <p class="text-xs font-bold text-slate-200">Drag & drop research PDF, Markdown, or Code file</p>
+              <p class="text-[11px] text-slate-400 font-mono">Supports .pdf, .md, .py, .ipynb, .js, .txt (up to 25MB)</p>
+              <span id="selected-file-badge" class="hidden text-xs px-3 py-1 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-500/40 font-mono"></span>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="text-[11px] font-mono text-slate-400 block mb-1">PAPER / THESIS TITLE</label>
+                <input type="text" id="input-title" placeholder="e.g. Graph-Based Synergies in Cross-Disciplinary Research" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="text-[11px] font-mono text-slate-400 block mb-1">DEPARTMENT / SCHOOL</label>
+                  <select id="input-department" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer">
+                    <option value="Computer Science & Data Science">Computer Science & Data Science</option>
+                    <option value="School of Business and Management">School of Business and Management</option>
+                    <option value="Commerce, Finance & Accountancy">Commerce, Finance & Accountancy</option>
+                    <option value="Department of Psychology">Department of Psychology</option>
+                    <option value="Department of Economics">Department of Economics</option>
+                    <option value="School of Law">School of Law</option>
+                    <option value="Media Studies & Digital Humanities">Media Studies & Digital Humanities</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[11px] font-mono text-slate-400 block mb-1">AUTHORS (COMMA SEPARATED)</label>
+                  <input type="text" id="input-authors" placeholder="e.g. Dr. K. Ramanathan, Aarav Nair" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500">
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-mono text-slate-400 block mb-1">ABSTRACT OR PASTE TEXT / CODE</label>
+                <textarea id="input-content" rows="4" placeholder="Paste research abstract, methodology text, or Python / ML code snippet here..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-200 font-mono focus:outline-none focus:border-cyan-500"></textarea>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-mono text-slate-400 block mb-1">GOOGLE GEMINI API KEY (OPTIONAL OVERRIDE)</label>
+                <input type="password" id="input-gemini-key" placeholder="AIzaSy... (leave blank to use built-in neural extractor)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500">
+              </div>
+
+              <button id="btn-submit-ingestion" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-black font-bold text-xs flex items-center justify-center gap-2 shadow-xl shadow-cyan-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                <i data-lucide="zap" class="w-4 h-4"></i>
+                <span>EXECUTE EXTRACTION & GRAPH INGESTION</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="lg:col-span-6 flex flex-col">
+            <div class="flex-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex flex-col font-mono text-xs">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800 text-[11px]">
+                <span class="text-cyan-400 flex items-center gap-1.5 font-bold">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                  <span>INGESTION TELEMETRY CONSOLE</span>
+                </span>
+                <span class="text-slate-500" id="telemetry-status">IDLE</span>
+              </div>
+
+              <div id="telemetry-output" class="flex-1 mt-3 space-y-2 overflow-y-auto text-[11px] text-slate-300 font-mono max-h-[380px]">
+                <p class="text-slate-500">Awaiting document submission...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <dialog id="cmd-palette-dialog" class="fixed inset-0 z-50 bg-transparent p-4 max-w-2xl w-full m-auto backdrop:bg-slate-950/80 backdrop:backdrop-blur-md rounded-2xl shadow-2xl focus:outline-none">
+    <div class="bg-slate-900 border border-cyan-500/40 rounded-2xl p-4 shadow-2xl flex flex-col gap-3 font-mono">
+      <div class="flex items-center gap-3 pb-3 border-b border-slate-800">
+        <i data-lucide="search" class="w-5 h-5 text-cyan-400"></i>
+        <input type="text" id="cmd-input" placeholder="Type to search papers, methods, authors, or natural questions..." class="flex-1 bg-transparent text-sm text-slate-100 placeholder-slate-500 focus:outline-none font-['Plus_Jakarta_Sans',sans-serif]">
+        <kbd class="px-2 py-1 text-[10px] bg-slate-800 rounded border border-slate-700 text-slate-400">ESC</kbd>
+      </div>
+      <div id="cmd-results" class="max-h-80 overflow-y-auto space-y-1 text-xs">
+        <div class="p-3 text-slate-500 text-center">Type keywords (e.g. "EEG", "UPI GNN", "ESG", "DPDP Act", "Hedonic Pricing")</div>
+      </div>
+    </div>
+  </dialog>
+
+  <footer class="relative z-10 border-t border-slate-900 bg-slate-950/90 py-3 px-4 text-center text-xs text-slate-400 font-mono flex flex-wrap items-center justify-between gap-2 max-w-7xl mx-auto w-full">
+    <span>GRAPHIS ENGINE // CHRIST (Deemed to be University) Bangalore Yeshwanthpur Campus</span>
+    <span class="text-[11px] text-slate-400">WCAG 2.1 AA Accessible • Google Cloud Run Ready</span>
+  </footer>
+
+  <script src="audio_synth.js"></script>
+  <script src="graph_renderer.js"></script>
+  <script src="collision_view.js"></script>
+  <script src="redundancy_view.js"></script>
+  <script src="ingestion_modal.js"></script>
+  <script src="command_palette.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
