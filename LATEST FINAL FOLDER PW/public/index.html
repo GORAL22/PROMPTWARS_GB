@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Graphis, a decentralized academic citation and knowledge graph engine for CHRIST University." />
+    <title>Graphis / Research Constellation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#constellation">Skip to research constellation</a>
+    <div class="noise" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="topbar">
+        <a class="mark" href="#" aria-label="Graphis home"><span class="mark-orbit">G</span><span>GRAPHIS</span></a>
+        <div class="campus"><span class="pulse"></span> CHRIST · YESHWANTHPUR <i>RESEARCH MESH</i></div>
+        <div class="top-actions">
+          <button class="text-button" id="helpButton" aria-haspopup="dialog">How it works</button>
+          <button class="profile" aria-label="Researcher profile">AK</button>
+        </div>
+      </header>
+
+      <section class="intro" aria-labelledby="app-title">
+        <p class="eyebrow">01 / THE HIDDEN COMMON GROUND</p>
+        <h1 id="app-title">Research is not a library.<br /><em>It is a constellation.</em></h1>
+        <p class="lede">Trace the signals crossing labs, disciplines and datasets—before a promising connection becomes another silo.</p>
+        <div class="intro-actions">
+          <button id="discoverButton" class="primary-button"><span>Reveal latent bridges</span><b>↗</b></button>
+          <button id="uploadButton" class="secondary-button">+ Feed the constellation</button>
+        </div>
+      </section>
+
+      <section class="studio" aria-label="Research graph workspace">
+        <aside class="control-deck" aria-label="Constellation controls">
+          <div class="deck-heading">
+            <span>LIVE INDEX</span>
+            <output id="nodeCount">12 nodes</output>
+          </div>
+          <label class="search-wrap" for="searchInput"><span>⌕</span><input id="searchInput" type="search" placeholder="Find a signal…" autocomplete="off" /></label>
+          <div class="filter-label">PERSPECTIVE</div>
+          <div class="filter-stack" id="filters" role="group" aria-label="Filter research areas">
+            <button class="filter active" data-filter="all">All signals <span>∞</span></button>
+            <button class="filter" data-filter="ai">AI &amp; systems <span>04</span></button>
+            <button class="filter" data-filter="health">Health &amp; society <span>03</span></button>
+            <button class="filter" data-filter="climate">Climate &amp; cities <span>02</span></button>
+            <button class="filter" data-filter="data">Methods &amp; data <span>03</span></button>
+          </div>
+          <div class="deck-divider"></div>
+          <div class="finder-card">
+            <span class="finder-icon">✦</span>
+            <p><strong>Bridge finder</strong> is looking for rare links.</p>
+            <button id="bridgeButton">Scan now <span>→</span></button>
+          </div>
+          <div class="microcopy">GRAPH STATE · <span id="graphState">SYNCHRONIZED</span></div>
+        </aside>
+
+        <div class="constellation-wrap" id="constellation" tabindex="-1">
+          <div class="constellation-header">
+            <div><span class="status-dot"></span> 23 papers · 7 sources · updated now</div>
+            <div class="view-toggle" role="group" aria-label="Graph mode"><button class="view-button active" aria-pressed="true">Web</button><button class="view-button" aria-pressed="false">List</button></div>
+          </div>
+          <div class="graph-stage" id="graphStage" aria-live="polite" aria-label="Interactive research knowledge graph"></div>
+          <div class="graph-legend" aria-label="Graph legend"><span><i class="legend-dot paper"></i> Research</span><span><i class="legend-dot data"></i> Dataset</span><span><i class="legend-dot method"></i> Method</span><span><i class="legend-link"></i> Shared signal</span></div>
+          <div class="nudge" id="nudge">Select a star to inspect its research trail <span>↗</span></div>
+        </div>
+
+        <aside class="insight-bay" id="insightBay" aria-live="polite">
+          <div class="bay-empty" id="emptyState">
+            <div class="empty-asterisk">✳</div>
+            <p>Choose any node in the constellation.</p>
+            <span>Its citations, methods and adjacent disciplines will surface here.</span>
+          </div>
+          <article class="node-inspector hidden" id="nodeInspector">
+            <div class="inspector-topline"><span id="detailType">RESEARCH</span><button id="closeInspector" aria-label="Close details">×</button></div>
+            <div class="node-kicker" id="detailKicker">School of Sciences</div>
+            <h2 id="detailTitle">Title</h2>
+            <p class="detail-summary" id="detailSummary"></p>
+            <dl class="detail-meta"><div><dt>SIGNAL STRENGTH</dt><dd id="detailScore">0.92</dd></div><div><dt>CONNECTED TO</dt><dd id="detailConnections">04 nodes</dd></div></dl>
+            <div class="tag-list" id="detailTags"></div>
+            <div class="inspector-actions"><button class="save-button" id="saveButton">✦ Save to trail</button><button class="cite-button" id="citeButton">Copy citation</button></div>
+          </article>
+          <article class="discovery-card hidden" id="discoveryCard">
+            <div class="discovery-eyebrow"><span>✦</span> DETECTED BRIDGE</div>
+            <h2 id="bridgeTitle">An unexpected overlap</h2>
+            <p id="bridgeText"></p>
+            <div class="bridge-path" id="bridgePath"></div>
+            <button id="exploreBridge">Explore connection <span>→</span></button>
+          </article>
+        </aside>
+      </section>
+
+      <section class="trail" aria-labelledby="trail-title">
+        <div><p class="eyebrow">02 / OPEN TRAILS</p><h2 id="trail-title">Questions worth<br /><em>following next.</em></h2></div>
+        <div class="trail-list" id="trailList"></div>
+      </section>
+    </main>
+
+    <dialog id="ingestDialog" class="modal">
+      <form method="dialog" class="modal-card" id="ingestForm">
+        <button class="modal-close" value="cancel" aria-label="Close upload dialog">×</button>
+        <p class="eyebrow">NEW MATERIAL</p><h2>Give the graph<br /><em>something to think with.</em></h2>
+        <p class="modal-copy">Add a paper, a Markdown thesis note, or selected source files from a research repository. Files stay in this running session.</p>
+        <label class="dropzone" for="fileInput"><input id="fileInput" type="file" multiple accept=".pdf,.md,.markdown,.txt,.js,.ts,.py,.r,.ipynb,.java,.csv" /><span class="drop-mark">↥</span><strong>Choose research material</strong><small>PDF, Markdown, TXT, CSV, JS, TS, PY, R, IPYNB · 20 files max</small></label>
+        <output class="file-status" id="fileStatus">Nothing selected yet.</output>
+        <button id="ingestSubmit" class="primary-button modal-submit" type="submit"><span>Weave into Graphis</span><b>↗</b></button>
+        <p class="modal-note">Sensitive uploads are processed in memory and not stored by this demo.</p>
+      </form>
+    </dialog>
+
+    <dialog id="helpDialog" class="modal help-modal">
+      <form method="dialog" class="modal-card"><button class="modal-close" value="cancel" aria-label="Close guide">×</button><p class="eyebrow">A DIFFERENT WAY TO SEARCH</p><h2>Follow the<br /><em>evidence, not tabs.</em></h2><ol class="how-list"><li><b>01</b><span>Feed Graphis a research file or code artefact.</span></li><li><b>02</b><span>It maps topics, methods and data signals as connected stars.</span></li><li><b>03</b><span>Use the bridge finder to surface related work across disciplines.</span></li></ol><button value="cancel" class="secondary-button">Enter the constellation</button></form>
+    </dialog>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="./demo-graph.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

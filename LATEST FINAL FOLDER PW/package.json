@@ -1,0 +1,15 @@
+{
+  "name": "graphis-knowledge-constellation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A secure Cloud Run knowledge graph engine for university research.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check public/app.js"
+  }
+}
